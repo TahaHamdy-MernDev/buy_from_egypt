@@ -1,8 +1,9 @@
-import Timeline from "@/components/main/timeline";
+import SignUpForm from "./form";
 import { Metadata } from "next";
 export const metadata: Metadata = {
-  title: "Home",
+  title: "Sign Up",
 };
+
 export default function Page() {
-  return <Timeline />;
+  return <SignUpForm />;
 }

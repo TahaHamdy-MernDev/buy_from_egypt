@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Toggle } from "../ui/toggle";
+import CreatePost from "../dialogs/create-post";
 
 function Timeline() {
   return (
@@ -35,6 +36,7 @@ const NewItemFormSchema = z.object({
 });
 type NewItemFormSchema = z.infer<typeof NewItemFormSchema>;
 function NewTimelineItem() {
+  const [open, setOpen] = React.useState<boolean>(false);
   const form = useForm<NewItemFormSchema>({
     resolver: zodResolver(NewItemFormSchema),
     defaultValues: {
@@ -136,6 +138,7 @@ function NewTimelineItem() {
           </Select>
         </div>
       </div>
+      <CreatePost is_open={open} onOpenChange={setOpen} />
     </div>
   );
 }
