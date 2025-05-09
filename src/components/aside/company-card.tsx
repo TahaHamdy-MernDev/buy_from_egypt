@@ -1,10 +1,11 @@
 import Image from "next/image";
 import React from "react";
 import { Separator } from "../ui/separator";
+import Link from "next/link";
 
 function CompanyCard() {
   return (
-    <div className="main-card !p-4">
+    <Link href={"/profile/user33"} className="main-card !p-4">
       <div className="bg-main-bg rounded-md py-4 px-5 flex-center flex-col w-full">
         <div className="flex items-center gap-4 justify-start  w-full">
           <Image
@@ -37,7 +38,7 @@ function CompanyCard() {
           </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
 

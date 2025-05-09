@@ -45,11 +45,11 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 @theme {
-  --font-geist-sans: "Manrope", sans-serif;
+  --font-geist-sans:"Manrope"
+   /* "Manrope"; */
 }
 :root {
-  /* #EAECE1 */
-
+--test :#3B3C36;
   --bg: oklch(0.94 0.0148 115.05);
   --radius: 0.625rem;
   --background: oklch(0.205 0.029 142.5);
@@ -58,7 +58,8 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(0.205 0.029 142.5);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.21 0.0305 142.58);
+  /* --primary: oklch(0.21 0.0305 142.58); */
+  --primary: oklab(0.35 0 0.01);
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.556 0.029 142.5);
   --secondary-foreground: oklch(0.205 0.029 142.5);
@@ -119,7 +120,7 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 .manrope-variable {
-  font-family: "Manrope", sans-serif;
+  font-family: "Manrope";
   font-optical-sizing: auto;
   font-weight: 400;
   font-style: normal;
