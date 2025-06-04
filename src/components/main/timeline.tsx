@@ -164,7 +164,7 @@ function NewTimelineItem() {
     </div>
   );
 }
-function TimelineItem() {
+export function TimelineItem() {
   const [open, setOpen] = React.useState<boolean>(false);
   const [rateOpen, setRateOpen] = React.useState<boolean>(false);
   const [isListOpen, setIsListOpen] = React.useState<boolean>(false);
@@ -449,7 +449,7 @@ const PostDetails = ({
             <div className=" pt-0 flex items-center justify-between">
               <CompanyDetails type="time" time="2 days ago" />
               <div className="flex items-center justify-end gap-2">
-                <Toggle variant={"circle"}>
+                <Toggle>
                   <Image
                     src="/images/saves.png"
                     alt="saves"

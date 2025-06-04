@@ -1,10 +1,16 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import Image from "next/image";
+import { cn } from "@/lib/utils";
 
-function ProductCard() {
+function ProductCard({ className }: Readonly<{ className?: string }>) {
   return (
-    <Card className="w-full border border-white bg-transparent rounded-lg pt-0 gap-4">
+    <Card
+      className={cn(
+        "w-full border border-white bg-transparent rounded-lg pt-0 gap-4",
+        className
+      )}
+    >
       <CardHeader className="bg-white rounded-lg !h-44">
         <Image
           src="/product-111.png"

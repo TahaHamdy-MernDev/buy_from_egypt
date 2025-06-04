@@ -1,16 +1,8 @@
+import "./globals.css";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Manrope } from "next/font/google";
-import "./globals.css";
-
-// const geistSans = Geist({
-//   variable: "--font-geist-sans",
-//   subsets: ["latin"],
-// });
-
-// const geistMono = Geist_Mono({
-//   variable: "--font-geist-mono",
-//   subsets: ["latin"],
-// });
+import { StoreProvider } from "@/providers/store.provider";
+import { Toaster } from "@/components/ui/sonner";
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -28,7 +20,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${manrope.variable} antialiased`}>{children}</body>
+      <body className={`${manrope.variable} antialiased`}>
+        <StoreProvider>{children}</StoreProvider>
+        <Toaster richColors theme="light" position="top-left" closeButton duration={300000} />
+      </body>
     </html>
   );
 }

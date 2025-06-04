@@ -56,7 +56,7 @@
   --foreground: oklch(0.145 0 0);
   --card: oklch(0.205 0.029 142.5);
   --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(0.205 0.029 142.5);
+  --popover: oklch(1 0 none);
   --popover-foreground: oklch(0.145 0 0);
   /* --primary: oklch(0.21 0.0305 142.58); */
   --primary: oklab(0.35 0 0.01);
@@ -136,7 +136,7 @@ html {
     @apply bg-main-bg text-foreground;
   }
   .container {
-    @apply mx-auto;
+    @apply mx-auto px-4;
   }
 }
 

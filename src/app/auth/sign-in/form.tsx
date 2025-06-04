@@ -19,15 +19,19 @@ import { redirect } from "next/navigation";
 import React from "react";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useLoginMutation } from "@/store/apis/auth.api";
+import { error } from "console";
+import { toast } from "sonner";
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
   password: z
     .string()
     .min(6, { message: "Password must be at least 6 characters." })
-    .max(20, { message: "Password must be at most 20 characters." }),
+    .max(32, { message: "Password must be at most 32 characters." }),
 });
 type FormSchema = z.infer<typeof formSchema>;
 export default function SignInForm() {
+  const [login, { isLoading }] = useLoginMutation();
   const [showPassword, setShowPassword] = React.useState(false);
   const form = useForm<FormSchema>({
     mode: "onSubmit",
@@ -40,7 +44,13 @@ export default function SignInForm() {
 
   function onSubmit(data: FormSchema) {
     console.log(data);
-    redirect("/home");
+    // login(data)
+    //   .unwrap()
+    //   .then(() => {})
+    //   .catch(({data}) => {
+    //     toast.error(data.message);
+    //   });
+    // redirect("/home");
   }
   return (
     <div className="flex gap-4 items-center justify-center h-full">
@@ -149,7 +159,11 @@ export default function SignInForm() {
                       Forgot Password?
                     </Link>
                   </div>
-                  <Button type="submit" className="h-13 rounded-full w-full">
+                  <Button
+                    type="submit"
+                    isLoading={isLoading}
+                    className="h-13 rounded-full w-full"
+                  >
                     Sign In
                   </Button>
                 </form>
