@@ -2,8 +2,15 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { Product } from "@/store/apis/products";
 
-function ProductCard({ className }: Readonly<{ className?: string }>) {
+function ProductCard({
+  className,
+  product,
+}: Readonly<{ className?: string; product?: Product }>) {
+  const product_image =
+    product?.images.find((image) => image.isPrimary)?.url ||
+    "/images/user-placeholder.png";
   return (
     <Card
       className={cn(
@@ -11,18 +18,20 @@ function ProductCard({ className }: Readonly<{ className?: string }>) {
         className
       )}
     >
-      <CardHeader className="bg-white rounded-lg !h-44">
+      <CardHeader className="bg-white rounded-lg flex items-center justify-center !h-44">
         <Image
-          src="/product-111.png"
-          width={200}
-          height={200}
+          src={product_image}
+          width={150}
+          height={150}
           className="object-cover h-40 w-full"
           alt="flag-icon"
         />
       </CardHeader>
       <CardContent className="">
         <CardTitle className="mb-2 flex items-center justify-between gap-2">
-          <p className="text-sm font-semibold text-secondary ">Nike</p>
+          <p className="text-sm font-semibold text-secondary ">
+            {product?.name}
+          </p>
           <span className="flex items-center gap-2">
             <svg
               width="14"
@@ -37,13 +46,15 @@ function ProductCard({ className }: Readonly<{ className?: string }>) {
                 stroke="#3B3C36"
               />
             </svg>
-            4.8
+            <p className="text-sm font-semibold text-secondary">4.5</p>
           </span>
         </CardTitle>
-        <p className="mt-2 text-primary text-base font-semibold">
-          Air Force Shoes
+        <p className="mt-2 text-primary text-base font-semibold truncate">
+          {product?.description}
         </p>
-        <p className="mt-4 text-base font-semibold text-secondary">6.50 $</p>
+        <p className="mt-4 text-base font-semibold text-secondary">
+          {product?.price} {product?.currencyCode}
+        </p>
       </CardContent>
     </Card>
   );

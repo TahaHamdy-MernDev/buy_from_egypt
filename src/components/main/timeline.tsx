@@ -24,7 +24,7 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Toggle } from "../ui/toggle";
-import CreatePost from "../dialogs/create-post";
+import CreatePost from "../create-post";
 import {
   Dialog,
   DialogContent,
@@ -39,14 +39,19 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Textarea } from "../ui/textarea";
 import { StarRating } from "../ui/star-rating";
 import Link from "next/link";
+import { Post, useGetPostsQuery } from "@/store/apis/posts";
 
 function Timeline() {
+  const { data } = useGetPostsQuery();
+  console.log("=====================================");
+  console.log(data);
+  console.log("=====================================");
   return (
     <div className="flex flex-col gap-4">
       <NewTimelineItem />
-      <TimelineItem />
-      <TimelineItem />
-      <TimelineItem />
+      {data?.map((post) => (
+        <TimelineItem key={post.postId} post={post} />
+      ))}
     </div>
   );
 }
@@ -93,20 +98,25 @@ function NewTimelineItem() {
                       placeholder="What are you selling ?"
                       className="flex-1 border-0 shadow-none bg-main-bg h-10 rounded-full"
                       {...field}
+                      onClick={() => setOpen(true)}
                     />
                   </FormControl>
                 </FormItem>
               )}
             />
-            <Button type="submit" className="flex-0 rounded-full size-10">
+            {/* <Button
+              type="submit"
+              onClick={() => setOpen(true)}
+              className="flex-0 rounded-full size-10"
+            >
               <ArrowRight className="size-5" />
-            </Button>
+            </Button> */}
           </form>
         </Form>
       </div>
-      <div className="flex items-center gap-4 justify-between mt-6">
+      {/*   <div className="flex items-center gap-4 justify-between mt-6">
         <div className="flex items-center justify-start gap-4">
-          <div className="flex items-center gap-4 justify-start">
+       <div className="flex items-center gap-4 justify-start">
             <Image
               src="/images/gallery.png"
               alt="logo"
@@ -145,10 +155,10 @@ function NewTimelineItem() {
               height={24}
             />
             <p className="text-sm">Event</p>
-          </div>
+          </div> 
         </div>
         <div>
-          <Select defaultValue="private">
+          {/* <Select defaultValue="private">
             <SelectTrigger className="w-[100px] cursor-pointer border-0 shadow-none bg-transparent">
               <SelectValue placeholder="private" />
             </SelectTrigger>
@@ -157,14 +167,14 @@ function NewTimelineItem() {
               <SelectItem value="public">public</SelectItem>
               <SelectItem value="private">private</SelectItem>
             </SelectContent>
-          </Select>
+          </Select> 
         </div>
-      </div>
+      </div>*/}
       <CreatePost is_open={open} onOpenChange={setOpen} />
     </div>
   );
 }
-export function TimelineItem() {
+export function TimelineItem({ post }: { post: Post }) {
   const [open, setOpen] = React.useState<boolean>(false);
   const [rateOpen, setRateOpen] = React.useState<boolean>(false);
   const [isListOpen, setIsListOpen] = React.useState<boolean>(false);
@@ -173,14 +183,16 @@ export function TimelineItem() {
       <div className=" flex items-center justify-between">
         <div className="flex items-center gap-2 justify-start">
           <Image
-            src={"/images/user-placeholder.png"}
+            src={`https://buy-from-egypt.vercel.app/${post.cloudFolder}`}
             alt="logo"
             width={24}
             className="size-14 rounded-full object-contain"
             height={24}
           />
           <div className="flex items-start justify-start flex-col gap-0.5">
-            <h4 className="capitalize text-xl font-semibold ">Company Name</h4>
+            <h4 className="capitalize text-xl font-semibold ">
+              <Link href={`/profile/${post.userId}`}>Company Name</Link>
+            </h4>
             <p className="text-base">2 days ago</p>
           </div>
         </div>

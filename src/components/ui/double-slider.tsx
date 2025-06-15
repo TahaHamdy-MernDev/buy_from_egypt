@@ -84,7 +84,7 @@ const DoubleSlider = React.forwardRef<
   return (
     <SliderPrimitive.Root
       ref={ref}
-      max={10000}
+      max={5000}
       className={cn(
         "relative flex w-full touch-none select-none items-center data-[orientation=vertical]:h-full data-[orientation=vertical]:w-auto data-[orientation=vertical]:flex-col data-[disabled]:opacity-50",
         className

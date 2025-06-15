@@ -22,7 +22,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${manrope.variable} antialiased`}>
         <StoreProvider>{children}</StoreProvider>
-        <Toaster richColors theme="light" position="top-left" closeButton duration={300000} />
+        <Toaster richColors theme="light" position="top-left" closeButton duration={3000} />
       </body>
     </html>
   );

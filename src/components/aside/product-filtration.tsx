@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -15,53 +15,66 @@ import { Switch } from "../ui/switch";
 import { DoubleSlider } from "../ui/double-slider";
 import { Input } from "../ui/input";
 import { StarRating } from "../ui/star-rating";
-
+import { Button } from "../ui/button";
+import { useGetCategoriesQuery } from "@/store/apis/category";
+import { useRouter } from "next/navigation";
 const ProductsFiltrationFormSchema = z.object({
-  industry: z.string(),
-  freeShipping: z.boolean(),
-  inStock: z.boolean(),
-  rate: z.string(),
+  categoryId: z.string().optional(),
+  // freeShipping: z.boolean().optional().optional(),
+  available: z.boolean().optional(),
+  rate: z.string().optional(),
   price: z.object({
-    from: z.number(),
-    to: z.number(),
+    from: z.number().optional(),
+    to: z.number().optional(),
   }),
 });
 type ProductsFiltrationFormType = z.infer<typeof ProductsFiltrationFormSchema>;
+function buildQueryParams(data: ProductsFiltrationFormType): string {
+  const params = new URLSearchParams();
+
+  if (data.categoryId) params.set("categoryId", data.categoryId);
+  // if (data.freeShipping)
+  //   params.set("freeShipping", data.freeShipping.toString());
+  if (data.available) params.set("available", data.available.toString());
+  if (data.rate) params.set("rate", data.rate);
+
+  if (data.price?.from !== undefined)
+    params.set("minPrice", String(data.price.from));
+  if (data.price?.to !== undefined)
+    params.set("maxPrice", String(data.price.to));
+
+  return params.toString();
+}
+
 function ProductsFiltration() {
-  const [value, setValue] = useState([2500, 8000]);
+  const router = useRouter();
+  const { data: industryOptions } = useGetCategoriesQuery({
+    refetchOnMountOrArgChange: true,
+  });
+
+  const [value, setValue] = useState([1000, 10000]);
 
   const form = useForm<ProductsFiltrationFormType>({
     resolver: zodResolver(ProductsFiltrationFormSchema),
+    defaultValues: {
+      categoryId: "",
+      // freeShipping: false,
+      available: false,
+      rate: "",
+      price: {
+        from: 100,
+        to: 10000,
+      },
+    },
   });
+  const resetParams = useCallback(() => {
+    const params = new URLSearchParams();
+    window.history.pushState(null, "", `?${params.toString()}`);
+  }, []);
   function onSubmit(data: ProductsFiltrationFormType) {
-    console.log(data);
+    const queryString = buildQueryParams(data);
+    router.push(`?${queryString}`);
   }
-  const industryOptions = [
-    {
-      label: "Agriculture & Food",
-      count: 300,
-      value: "product-1",
-    },
-    {
-      label: "Manufacturing & Industrial",
-      count: 300,
-      value: "product-2",
-    },
-    {
-      label: "Consumer Goods & Retail",
-      count: 300,
-      value: "product-3",
-    },
-    {
-      label: "Energy & Natural Resources",
-      count: 200,
-      value: "product-4",
-    },
-    { label: "Pharmaceuticals", count: 100, value: "product-5" },
-    { label: "Technology & Electronics", count: 100, value: "product-6" },
-    { label: "Automotive", count: 100, value: "product-7" },
-    { label: "Construction & Real Estate", count: 100, value: "product-8" },
-  ];
   return (
     <div className="main-card !p-2">
       <Form {...form}>
@@ -74,7 +87,7 @@ function ProductsFiltration() {
               <AccordionContent>
                 <FormField
                   control={form.control}
-                  name="industry"
+                  name="categoryId"
                   render={({ field }) => (
                     <FormItem className="space-y-3">
                       <FormControl>
@@ -83,7 +96,7 @@ function ProductsFiltration() {
                           defaultValue={field.value}
                           className="mt-4 px-2 flex flex-col space-y-2"
                         >
-                          {industryOptions.map((option, index) => {
+                          {industryOptions?.map((option, index) => {
                             return (
                               <FormItem
                                 key={index + 1 - 1}
@@ -92,18 +105,18 @@ function ProductsFiltration() {
                                 <FormControl>
                                   <RadioGroupItem
                                     className="[&_svg]:size-3 [&_svg]:rounded-full"
-                                    value={option.value}
-                                    id={option.value}
+                                    value={option.categoryId}
+                                    id={option.categoryId}
                                   />
                                 </FormControl>
                                 <FormLabel
                                   className="text-secondary font-normal flex justify-between w-full"
-                                  htmlFor={option.value}
+                                  htmlFor={option.categoryId}
                                 >
-                                  {option.label}
-                                  <div className="text-sm text-muted-foreground">
-                                    ({option.count})
-                                  </div>
+                                  {option.name}
+                                  {/* <div className="text-sm text-muted-foreground">
+                                    ({option.count}) 
+                                  {/* </div> */}
                                 </FormLabel>
                               </FormItem>
                             );
@@ -116,7 +129,7 @@ function ProductsFiltration() {
               </AccordionContent>
             </AccordionItem>
           </Accordion>
-          <FormField
+          {/* <FormField
             control={form.control}
             name="freeShipping"
             render={({ field }) => (
@@ -134,10 +147,10 @@ function ProductsFiltration() {
                 </FormControl>
               </FormItem>
             )}
-          />
+          /> */}
           <FormField
             control={form.control}
-            name="inStock"
+            name="available"
             render={({ field }) => (
               <FormItem className="flex flex-row items-center justify-between ">
                 <div className="space-y-0.5">
@@ -219,7 +232,7 @@ function ProductsFiltration() {
               </AccordionContent>
             </AccordionItem>
           </Accordion>
-          <Accordion type="single" collapsible>
+          {/* <Accordion type="single" collapsible>
             <AccordionItem value="item-3">
               <AccordionTrigger className="flex justify-between gap-4 items-center !text-lg !font-semibold !leading-relaxed cursor-pointer !py-0">
                 Ratings
@@ -244,7 +257,20 @@ function ProductsFiltration() {
                 />
               </AccordionContent>
             </AccordionItem>
-          </Accordion>
+          </Accordion> */}
+          <div className="flex  flex-row gap-4">
+            <Button type="submit" className="mt-4 h-9" >
+              Filter
+            </Button>
+            <Button
+              type="reset"
+              variant={"ghost"}
+              className=" mt-4 h-9"
+              onClick={() => resetParams()}
+            >
+              Clear
+            </Button>
+          </div>
         </form>
       </Form>
     </div>

@@ -12,30 +12,44 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
+import { useVerifyOtpLinkMutation } from "@/store/apis/auth.api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import React from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 const formSchema = z.object({
-  otp: z
+  otpCode: z
     .string()
-    .min(4, { message: "OTP must be at least 4 characters." })
-    .max(4, { message: "OTP must be at most 4 characters." }),
+    .min(6, { message: "OTP must be at least 6 characters." })
+    .max(6, { message: "OTP must be at most 6 characters." }),
 });
 type FormSchema = z.infer<typeof formSchema>;
 function OtpVerificationForm() {
+  const [verifyOtp, { isLoading }] = useVerifyOtpLinkMutation();
+  const router = useRouter();
   const form = useForm<FormSchema>({
     mode: "onSubmit",
     resolver: zodResolver(formSchema),
     defaultValues: {
-      otp: "",
+      otpCode: "",
     },
   });
-  function onSubmit(data: FormSchema) {
-    redirect("update-password");
-    console.log(data);
+  async function onSubmit(data: FormSchema) {
+    const identifier = localStorage.getItem("identifier");
+    // redirect("update-password");
+    await verifyOtp({ otpCode: data.otpCode, identifier })
+      .unwrap()
+      .then((res) => {
+        toast.success(res.message);
+        // router.push("update-password");
+      })
+      .catch(({ data }) => {
+        toast.error(data.message);
+      });
+    // console.log(data);
   }
   return (
     <div className="flex gap-4 items-center justify-center h-full">
@@ -53,12 +67,12 @@ function OtpVerificationForm() {
             <div className=" flex items-center justify-center space-y-4">
               <FormField
                 control={form.control}
-                name="otp"
+                name="otpCode"
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
                       <InputOTP
-                        maxLength={4}
+                        maxLength={6}
                         pattern={REGEXP_ONLY_DIGITS}
                         {...field}
                       >
@@ -67,6 +81,8 @@ function OtpVerificationForm() {
                           <InputOTPSlot index={1} />
                           <InputOTPSlot index={2} />
                           <InputOTPSlot index={3} />
+                          <InputOTPSlot index={4} />
+                          <InputOTPSlot index={5} />
                         </InputOTPGroup>
                       </InputOTP>
                     </FormControl>
@@ -79,6 +95,7 @@ function OtpVerificationForm() {
             <Button
               type="submit"
               variant={"default"}
+              isLoading={isLoading}
               className="h-12 mt-6 rounded-full w-full"
             >
               Verify

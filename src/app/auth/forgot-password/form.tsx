@@ -9,28 +9,42 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useForgotPasswordMutation } from "@/store/apis/auth.api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import React from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 const formSchema = z.object({
-  email: z.string().email({ message: "Invalid email address." }),
+  identifier: z.string().email({ message: "Invalid email address." }),
 });
 type FormSchema = z.infer<typeof formSchema>;
 function ForgotPasswordForm() {
+  const [forgotPass, { isLoading }] = useForgotPasswordMutation();
+  const router = useRouter();
   const form = useForm<FormSchema>({
     mode: "onSubmit",
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "",
+      identifier: "",
     },
   });
-  function onSubmit(data: FormSchema) {
-    redirect("otp-verification");
+  async function onSubmit(data: FormSchema) {
+    await forgotPass(data)
+      .unwrap()
+      .then((res) => {
+        toast.success(res.message);
+        localStorage.setItem("identifier", data.identifier);
+        router.push("otp-verification");
+      })
+      .catch(({ data }) => {
+        toast.error(data.message);
+      });
+    // redirect("otp-verification");
     console.log(data);
   }
   return (
@@ -52,7 +66,7 @@ function ForgotPasswordForm() {
           >
             <FormField
               control={form.control}
-              name="email"
+              name="identifier"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Email Address</FormLabel>
@@ -75,7 +89,11 @@ function ForgotPasswordForm() {
                 </FormItem>
               )}
             />
-            <Button type="submit" className="h-12 mt-6 rounded-full w-full">
+            <Button
+              type="submit"
+              isLoading={isLoading}
+              className="h-12 mt-6 rounded-full w-full"
+            >
               SendOTP
             </Button>
           </form>

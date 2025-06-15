@@ -15,12 +15,11 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import React from "react";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useLoginMutation } from "@/store/apis/auth.api";
-import { error } from "console";
 import { toast } from "sonner";
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
@@ -32,25 +31,28 @@ const formSchema = z.object({
 type FormSchema = z.infer<typeof formSchema>;
 export default function SignInForm() {
   const [login, { isLoading }] = useLoginMutation();
+  const router = useRouter();
   const [showPassword, setShowPassword] = React.useState(false);
   const form = useForm<FormSchema>({
     mode: "onSubmit",
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      email: "raza4omeh5@maildax.me",
+      password: "Pa$$w00rd@me1",
     },
   });
 
-  function onSubmit(data: FormSchema) {
+  async function onSubmit(data: FormSchema) {
     console.log(data);
-    // login(data)
-    //   .unwrap()
-    //   .then(() => {})
-    //   .catch(({data}) => {
-    //     toast.error(data.message);
-    //   });
-    // redirect("/home");
+    await login(data)
+      .unwrap()
+      .then((res) => {
+        localStorage.setItem("token", res.token);
+        router.push("/home");
+      })
+      .catch(({ data }) => {
+        toast.error(data.message);
+      });
   }
   return (
     <div className="flex gap-4 items-center justify-center h-full">
@@ -162,7 +164,7 @@ export default function SignInForm() {
                   <Button
                     type="submit"
                     isLoading={isLoading}
-                    className="h-13 rounded-full w-full"
+                    className=" rounded-full w-full"
                   >
                     Sign In
                   </Button>
