@@ -6,11 +6,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import CompanyDetails from "./company-details";
+import CompanyDetails from "../company-details";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import {
   Form,
   FormControl,
@@ -18,14 +18,13 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "./ui/form";
-import { Textarea } from "./ui/textarea";
+} from "../ui/form";
+import { Textarea } from "../ui/textarea";
 import Image from "next/image";
-import { MultiFileInput } from "./ui/multi-files-input";
-import { Input } from "./ui/input";
+import { Input } from "../ui/input";
 import { useCreatePostMutation } from "@/store/apis/posts";
 import { toast } from "sonner";
-import { FileInput } from "./ui/input-file";
+import { FileInput } from "../ui/input-file";
 interface Props {
   is_open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -33,10 +32,10 @@ interface Props {
 const FormSchema = z.object({
   content: z.string(),
   title: z.string(),
-  // images: z.instanceof(File).nullable(),
-  images: z.array(z.instanceof(File)).nullable(),
+  images: z.array(z.instanceof(File)).optional(),
 });
 type FormValues = z.infer<typeof FormSchema>;
+
 function CreatePost({ is_open, onOpenChange }: Readonly<Props>) {
   const [newPost, { isLoading }] = useCreatePostMutation();
   const [uploadOpen, setUploadOpen] = useState(false);
@@ -45,12 +44,20 @@ function CreatePost({ is_open, onOpenChange }: Readonly<Props>) {
     defaultValues: {
       title: "",
       content: "",
-      images: null,
+      images: undefined,
     },
   });
   async function onSubmit(data: FormValues) {
-    // console.log(data);
-    await newPost(data)
+    const formData = new FormData();
+    formData.append("title", data.title);
+    formData.append("content", data.content);
+
+    if (data.images) {
+      data.images.forEach((file, index) => {
+        formData.append(`images`, file, file.name);
+      });
+    }
+    await newPost(formData)
       .unwrap()
       .then((res) => {
         toast.success("Post created successfully");
@@ -120,15 +127,9 @@ function CreatePost({ is_open, onOpenChange }: Readonly<Props>) {
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
-                        {/* <FileInput
+                        <FileInput
                           value={field.value}
                           onChange={field.onChange}
-                          accept="image/*"
-                        /> */}
-                        <MultiFileInput
-                          value={field.value}
-                          onChange={field.onChange}
-                          maxFiles={5}
                           accept="image/*"
                         />
                       </FormControl>

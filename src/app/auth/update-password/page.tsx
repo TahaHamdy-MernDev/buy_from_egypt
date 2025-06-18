@@ -1,4 +1,5 @@
 "use client";
+
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -17,6 +18,8 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { Suspense } from "react";
+
 const formSchema = z
   .object({
     token: z.string(),
@@ -33,9 +36,10 @@ const formSchema = z
     message: "Passwords must match.",
     path: ["confirmPassword"],
   });
+
 type FormSchema = z.infer<typeof formSchema>;
 
-export default function Page() {
+function ResetPasswordContent() {
   const [resetPassword, { isLoading }] = useResetPasswordMutation();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -51,65 +55,53 @@ export default function Page() {
     },
   });
 
-  async function onSubmit(data: FormSchema) {
-    // console.log(data);
-    await resetPassword(data)
+  function onSubmit(data: FormSchema) {
+    resetPassword(data)
       .unwrap()
-      .then((res) => {
-        toast.success(res.message);
-        router.push("updated-successfully");
+      .then(() => {
+        toast.success("Password updated successfully!");
+        router.push("/auth/login");
       })
-      .catch(({ data }) => {
-        toast.error(data.message);
+      .catch((error) => {
+        toast.error(error.data?.message || "Failed to update password");
       });
   }
+
+  if (!token) {
+    redirect("/auth/forgot-password");
+  }
+
   return (
-    <div className="flex gap-4 items-center justify-center h-full">
-      <div className="main-card max-w-md flex items-center flex-col space-y-6">
-        <div className="text-center mb-10">
-          <h3 className="text-2xl mb-4 font-semibold text-black">
-            Update Password
-          </h3>
-          <p className="text-sm text-secondary">Enter your new password</p>
+    <div className="flex min-h-screen flex-col items-center justify-center bg-background">
+      <div className="w-full max-w-md space-y-8">
+        <div>
+          <Image
+            className="mx-auto h-12 w-auto"
+            src="/logo.svg"
+            alt="Buy From Egypt"
+            width={180}
+            height={48}
+          />
+          <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
+            Reset your password
+          </h2>
+          <p className="mt-2 text-center text-sm text-gray-600">
+            Enter your new password
+          </p>
         </div>
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="w-full space-y-4"
-          >
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
               control={form.control}
               name="newPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>New Password</FormLabel>
+                  <FormLabel>Password</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="*************"
                       type={showPassword ? "text" : "password"}
-                      main_icon={
-                        <Image
-                          src="/images/lock.png"
-                          alt="lock"
-                          height={26}
-                          width={26}
-                        />
-                      }
-                      second_icon={
-                        <Image
-                          src={
-                            showPassword
-                              ? "/images/eye.png"
-                              : "/images/Eye Closed.png"
-                          }
-                          alt="eye"
-                          className="cursor-pointer"
-                          height={26}
-                          width={26}
-                          onClick={() => setShowPassword(!showPassword)}
-                        />
-                      }
                       {...field}
+                      placeholder="Enter your new password"
                     />
                   </FormControl>
                   <FormMessage />
@@ -121,50 +113,54 @@ export default function Page() {
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel>Confirm Password</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="*************"
                       type={showPassword ? "text" : "password"}
-                      main_icon={
-                        <Image
-                          src="/images/lock.png"
-                          alt="lock"
-                          height={26}
-                          width={26}
-                        />
-                      }
-                      second_icon={
-                        <Image
-                          src={
-                            showPassword
-                              ? "/images/eye.png"
-                              : "/images/Eye Closed.png"
-                          }
-                          alt="eye"
-                          className="cursor-pointer"
-                          height={26}
-                          width={26}
-                          onClick={() => setShowPassword(!showPassword)}
-                        />
-                      }
                       {...field}
+                      placeholder="Confirm your new password"
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <input
+                  id="show-password"
+                  name="show-password"
+                  type="checkbox"
+                  checked={showPassword}
+                  onChange={(e) => setShowPassword(e.target.checked)}
+                  className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                />
+                <label
+                  htmlFor="show-password"
+                  className="ml-2 block text-sm text-gray-900"
+                >
+                  Show password
+                </label>
+              </div>
+            </div>
             <Button
               type="submit"
-              isLoading={isLoading}
-              className="h-13 mt-3 rounded-full w-full"
+              className="w-full"
+              disabled={isLoading}
             >
-              Confirm
+              {isLoading ? "Updating password..." : "Update Password"}
             </Button>
           </form>
         </Form>
       </div>
     </div>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ResetPasswordContent />
+    </Suspense>
   );
 }
