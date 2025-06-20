@@ -1,6 +1,13 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQuery } from "./base-query.api";
-
+export interface Pagination {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+  NextPage: boolean;
+  PreviousPage: boolean;
+}
 export interface Post {
   postId: string;
   title: string;
@@ -23,6 +30,10 @@ export interface Post {
     postId: string;
   }>;
 }
+export interface PostResponse {
+  data: Post[];
+  meta: Pagination;
+}
 export interface RatePostRequest {
   postId: string;
   value: number;
@@ -42,10 +53,14 @@ export const postsApi = createApi({
           body,
         }),
       }),
-      getPosts: builder.query<Post[], void>({
-        query: () => ({
+      getPosts: builder.query<PostResponse, { page?: number; limit?: number }>({
+        query: ({ page = 1, limit = 10 } = {}) => ({
           url: "/posts",
           method: "GET",
+          params: {
+            page,
+            limit,
+          },
         }),
       }),
       ratePost: builder.mutation<RatePostResponse, RatePostRequest>({
@@ -64,5 +79,9 @@ export const postsApi = createApi({
   },
 });
 
-export const { useGetPostIdQuery, useCreatePostMutation, useGetPostsQuery, useRatePostMutation } =
-  postsApi;
+export const {
+  useGetPostIdQuery,
+  useCreatePostMutation,
+  useGetPostsQuery,
+  useRatePostMutation,
+} = postsApi;

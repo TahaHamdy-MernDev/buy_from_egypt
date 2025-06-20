@@ -48,6 +48,7 @@ export default function SignInForm() {
       .unwrap()
       .then((res) => {
         localStorage.setItem("token", res.token);
+        localStorage.setItem("user", JSON.stringify(res.user));
         router.push("/home");
       })
       .catch(({ data }) => {
