@@ -23,7 +23,9 @@ function CompanyCard() {
   useEffect(() => {
     const userData = localStorage?.getItem("user");
     if (userData) {
-      setUser(JSON.parse(userData));
+      setUser(JSON.parse(userData) as { userId: string });
+    } else {
+      setUser(null);
     }
   }, []);
 
