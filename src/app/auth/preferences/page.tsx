@@ -92,8 +92,10 @@ function Page() {
   });
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
-    const identifier = localStorage.getItem("identifier") ? JSON.parse(localStorage.getItem("identifier") as string) : null;
+    console.log("Form submitted:", data);
+    const identifier = localStorage.getItem("identifier") || "";
     try {
+      // industries should be array of strings
       const justValues = data.industries.map((industry) => industry.value);
       console.log("Form submitted:", data);
       await userPreference({
@@ -102,16 +104,16 @@ function Page() {
         shippingMethods: data.shippingMethod || "",
         orderQuantity: data.orderQuantity || "",
         receiveAlerts: data.receiveAlerts,
-        email:identifier
+        email: identifier,
       })
         .unwrap()
         .then((res) => {
+          toast.success("Preferences saved successfully!");
           router.push("/auth/sign-in");
         })
         .catch(({ data }) => {
           toast.error(data.message);
         });
-      toast.success("Preferences saved successfully!");
     } catch (error) {
       console.error("Error saving preferences:", error);
       toast.error("Failed to save preferences. Please try again.");

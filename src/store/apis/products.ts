@@ -50,7 +50,17 @@ export const productsApi = createApi({
           params,
         }),
       }),
+      getSavedProducts: builder.query<
+        ProductResponse,
+        { [k: string | number]: string | number }
+      >({
+        query: (params) => ({
+          url: "/products/saved",
+          method: "GET",
+          params,
+        }),
+      }),
     };
   },
 });
-export const { useGetProductsQuery } = productsApi;
+export const { useGetProductsQuery, useGetSavedProductsQuery } = productsApi;

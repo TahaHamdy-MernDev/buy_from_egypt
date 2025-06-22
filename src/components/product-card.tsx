@@ -29,10 +29,12 @@ export function ProductCardSkeleton({ className }: { className?: string }) {
 function ProductCard({
   className,
   product,
-}: Readonly<{ className?: string; product?: Product }>) {
-  const product_image =
-    product?.images.find((image) => image.isPrimary)?.url ||
-    "/images/no_product_image.png";
+}: Readonly<{ className?: string; product?: Partial<Product> }>) {
+  const product_image = product?.images?.length
+    ? product.images.find((image) => image?.isPrimary)?.url ||
+      product.images[0]?.url ||
+      "/images/no_product_image.png"
+    : "/images/no_product_image.png";
   return (
     <Card
       className={cn(
