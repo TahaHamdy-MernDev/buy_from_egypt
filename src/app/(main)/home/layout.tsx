@@ -1,5 +1,5 @@
 import CompanyCard from "@/components/aside/company-card";
-import Messages from "@/components/aside/messages";
+// import Messages from "@/components/aside/messages";
 import VerticalNav from "@/components/aside/vertical-nav";
 import Header from "@/components/header/header";
 import { Metadata } from "next";
@@ -20,7 +20,7 @@ export default function Layout({
           </aside>
           <section className="w-1/2 flex-1 ">{children}</section>
           <aside className="sticky top-28 w-1/5">
-          <Messages />
+          {/* <Messages /> */}
           </aside>
         </div>
       </main>

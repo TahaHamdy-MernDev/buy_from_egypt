@@ -10,7 +10,7 @@ export interface User {
 export interface Message {
   messageId: string;
   conversationId: string;
-  senderId: string;
+  // senderId: string;
   receiverId: string;
   sender?: {
     userId: string;

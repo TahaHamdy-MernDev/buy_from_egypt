@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Search, Loader2 } from "lucide-react";
@@ -23,7 +23,8 @@ const SearchFormSchema = z.object({
 
 type SearchForm = z.infer<typeof SearchFormSchema>;
 
-export default function SavesPage() {
+// This component contains the logic that uses useSearchParams
+function SavesContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [clientSideSearch, setClientSideSearch] = useState("");
@@ -185,5 +186,27 @@ export default function SavesPage() {
         </div>
       )}
     </div>
+  );
+}
+
+// Main page component that wraps the content in a Suspense boundary
+export default function SavesPage() {
+  return (
+    <Suspense fallback={
+      <div className="w-full flex flex-col gap-6 p-4 md:p-6">
+        <div className="flex flex-col gap-2">
+          <div className="h-8 w-48 bg-gray-200 rounded animate-pulse"></div>
+          <div className="h-4 w-64 bg-gray-200 rounded animate-pulse"></div>
+        </div>
+        <div className="h-12 w-full max-w-2xl bg-gray-200 rounded-full animate-pulse"></div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <ProductCardSkeleton key={`skeleton-${i}`} />
+          ))}
+        </div>
+      </div>
+    }>
+      <SavesContent />
+    </Suspense>
   );
 }
