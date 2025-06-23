@@ -1,9 +1,9 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQuery } from "./base-query.api";
-import {
-  SocialMedia,
-  CreateSocialMediaDto,
-  UpdateSocialMediaDto,
+import { 
+  SocialMedia, 
+  CreateSocialMediaDto, 
+  UpdateSocialMediaDto 
 } from "@/types/social-media";
 
 interface Image {
@@ -114,7 +114,7 @@ export interface ProfileResponse {
 export const profileApi = createApi({
   reducerPath: "profileApi",
   baseQuery,
-  tagTypes: ["Profile"],
+  tagTypes: ['Profile'],
   endpoints: (builder) => ({
     getProfile: builder.query<ProfileResponse, void>({
       query: () => ({
@@ -132,54 +132,54 @@ export const profileApi = createApi({
   }),
 });
 export const socialMediaApi = createApi({
-  reducerPath: "socialMediaApi",
+  reducerPath: 'socialMediaApi',
   baseQuery,
-  tagTypes: ["SocialMedia"],
+  tagTypes: ['SocialMedia'],
   endpoints: (builder) => ({
     getSocialMedias: builder.query<SocialMedia[], void>({
-      query: () => "social-media",
+      query: () => 'social-media',
       providesTags: (result) =>
         result
           ? [
-              ...result.map(({ id }) => ({ type: "SocialMedia" as const, id })),
-              { type: "SocialMedia", id: "LIST" },
+              ...result.map(({ id }) => ({ type: 'SocialMedia' as const, id })),
+              { type: 'SocialMedia', id: 'LIST' },
             ]
-          : [{ type: "SocialMedia", id: "LIST" }],
+          : [{ type: 'SocialMedia', id: 'LIST' }],
     }),
     createSocialMedia: builder.mutation<SocialMedia, CreateSocialMediaDto>({
       query: (body) => ({
-        url: "social-media",
-        method: "POST",
+        url: 'social-media',
+        method: 'POST',
         body,
       }),
-      invalidatesTags: [{ type: "SocialMedia", id: "LIST" }],
+      invalidatesTags: [{ type: 'SocialMedia', id: 'LIST' }],
     }),
-    updateSocialMedia: builder.mutation<
-      SocialMedia,
-      { id: string; data: UpdateSocialMediaDto }
-    >({
+    updateSocialMedia: builder.mutation<SocialMedia, { id: string; data: UpdateSocialMediaDto }>({
       query: ({ id, data }) => ({
         url: `social-media/${id}`,
-        method: "PATCH",
+        method: 'PATCH',
         body: data,
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: "SocialMedia", id }],
+      invalidatesTags: (result, error, { id }) => [{ type: 'SocialMedia', id }],
     }),
     deleteSocialMedia: builder.mutation<void, string>({
       query: (id) => ({
         url: `social-media/${id}`,
-        method: "DELETE",
+        method: 'DELETE',
       }),
-      invalidatesTags: (result, error, id) => [{ type: "SocialMedia", id }],
+      invalidatesTags: (result, error, id) => [{ type: 'SocialMedia', id }],
     }),
   }),
 });
 
-export const { useUpdateProfileMutation, useGetProfileQuery } = profileApi;
+export const { 
+  useUpdateProfileMutation, 
+  useGetProfileQuery 
+} = profileApi;
 
-export const {
+export const { 
   useGetSocialMediasQuery,
   useCreateSocialMediaMutation,
   useUpdateSocialMediaMutation,
-  useDeleteSocialMediaMutation,
+  useDeleteSocialMediaMutation 
 } = socialMediaApi;

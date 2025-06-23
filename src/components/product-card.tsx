@@ -4,6 +4,7 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Product } from "@/store/apis/products";
 import { Skeleton } from "./ui/skeleton";
+import Link from "next/link";
 export function ProductCardSkeleton({ className }: { className?: string }) {
   return (
     <Card
@@ -29,12 +30,10 @@ export function ProductCardSkeleton({ className }: { className?: string }) {
 function ProductCard({
   className,
   product,
-}: Readonly<{ className?: string; product?: Partial<Product> }>) {
-  const product_image = product?.images?.length
-    ? product.images.find((image) => image?.isPrimary)?.url ||
-      product.images[0]?.url ||
-      "/images/no_product_image.png"
-    : "/images/no_product_image.png";
+}: Readonly<{ className?: string; product?: Product }>) {
+  const product_image =
+    product?.images.find((image) => image.isPrimary)?.url ||
+    "/images/no_product_image.png";
   return (
     <Card
       className={cn(
@@ -65,9 +64,9 @@ function ProductCard({
       )}
       <CardContent className="">
         <CardTitle className="mb-2 flex items-center justify-between gap-2">
-          <p className="text-sm font-semibold text-secondary ">
+          <Link href={`/product/${product?.productId}`} className="text-sm font-semibold text-secondary ">
             {product?.name}
-          </p>
+          </Link>
           <span className="flex items-center gap-2">
             <svg
               width="14"

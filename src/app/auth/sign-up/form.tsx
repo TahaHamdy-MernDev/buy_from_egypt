@@ -64,9 +64,7 @@ export default function SignUpForm() {
   const [open, setOpen] = React.useState<boolean>(false);
   const [email, setEmail] = React.useState<string>("");
   const router = useRouter();
-  // Always use the full schema for resolver to avoid type mismatch
   const form = useForm<FormSchema>({
-    //3c120e7f-462c-41f2-ae02-d18cb2c5c619
     resolver: zodResolver(formSchema),
     mode: "onChange",
     shouldFocusError: true,
@@ -85,11 +83,13 @@ export default function SignUpForm() {
 
   async function onSubmit(data: FormSchema) {
     try {
-      localStorage.setItem("identifier", data.email);
       setEmail(data.email);
 
       // Register the user
       const registerResponse = await register(data).unwrap();
+      if (registerResponse.user?.userId) {
+        localStorage.setItem("userId", registerResponse.user.userId);
+      }
       toast.success(registerResponse.message);
 
       // Request OTP for email verification
@@ -105,7 +105,8 @@ export default function SignUpForm() {
       const errorMessage =
         error.data?.message || "An error occurred during registration";
       toast.error(errorMessage);
-      console.error("Registration error:", error);
+
+      // console.error("Registration error:", error);
     }
     // redirect("sign-in");
   }
